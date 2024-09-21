@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="TodoAppMAUI.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:converters="clr-namespace:TodoAppMAUI.Converters"
+    xmlns:model="clr-namespace:TodoAppMAUI.Models"
+    xmlns:viewmodel="clr-namespace:TodoAppMAUI.ViewModels"
+    x:DataType="viewmodel:TodoViewModel">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:BooleanTostringConverter x:Key="BooleanToStringconverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid
+        Padding="10"
+        BackgroundColor="White"
+        ColumnDefinitions=".75*,.25*"
+        ColumnSpacing="5"
+        RowDefinitions="100,Auto,*">
+        <Image Grid.ColumnSpan="2" Source="dotnet_bot.png" />
+        <Entry
+            Grid.Row="1"
+            Placeholder="Entrez la tâche"
+            Text="{Binding Name}" />
+        <Button
+            Grid.Row="1"
+            Grid.Column="1"
+            Command="{Binding CreateTodoCommand}"
+            Text="Add" />
+        <CollectionView
+            Grid.Row="2"
+            Grid.ColumnSpan="2"
+            ItemsSource="{Binding Todos}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="{x:Type model:Todo}">
+                    <SwipeView>
+                        <SwipeView.RightItems>
+                            <SwipeItems Mode="Execute">
+                                <SwipeItem
+                                    BackgroundColor="Red"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:TodoViewModel}}, Path=DeleteTodoCommand}"
+                                    CommandParameter="{Binding Id}"
+                                    Text="Delete" />
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                        <SwipeView.LeftItems>
+                            <SwipeItems Mode="Execute">
+                                <SwipeItem
+                                    BackgroundColor="Green"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:TodoViewModel}}, Path=UpdateTodoCommand}"
+                                    CommandParameter="{Binding .}"
+                                    Text="Complete" />
+                            </SwipeItems>
+                        </SwipeView.LeftItems>
+                        <Grid Padding="1">
+                            <Frame BackgroundColor="{Binding IsCompleted, Converter={StaticResource BooleanToStringconverter}}">
+                                <Label Text="{Binding Name}" TextColor="White" />
+                            </Frame>
+                        </Grid>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
+
+</ContentPage>
